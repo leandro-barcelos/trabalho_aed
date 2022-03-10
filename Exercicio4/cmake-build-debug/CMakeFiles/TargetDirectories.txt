@@ -1,0 +1,3 @@
+/home/leandrobf/OneDrive/GBC024-AED1/Trabalho2/Exercicio4/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/leandrobf/OneDrive/GBC024-AED1/Trabalho2/Exercicio4/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/leandrobf/OneDrive/GBC024-AED1/Trabalho2/Exercicio4/cmake-build-debug/CMakeFiles/Exercicio4.dir
