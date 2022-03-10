@@ -78,28 +78,10 @@ int apaga_fila(Fila *f) {
     }
 
     free(aux);
-    *F = NULL;
+    *f = NULL;
 
     return 1;
 }
-
-int esvazia_fila(Fila f){
-    if (f == NULL)
-        return 0;
-
-    struct no *aux;
-
-    while (f->ini != f->fim) {
-        aux = f->ini;
-        f->ini = aux->prox;
-        free(aux);
-    }
-
-    f->ini = NULL;
-    f->fim = NULL;
-    return 1;
-}
-
 
 int tamanho_fila(Fila f){
     if(f == NULL)
@@ -112,12 +94,12 @@ int tamanho_fila(Fila f){
 
     while(!fila_vazia(f)) {
         remove_ini(&f, &t);
-        insere_fim(f2, t);
+        insere(&f2, t);
         c++;
     }
     while(!fila_vazia(f2)) {
         remove_ini(&f2, &t);
-        insere_fim(f, t);
+        insere(&f, t);
     }
 
     return c;

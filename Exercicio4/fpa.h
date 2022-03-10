@@ -15,7 +15,7 @@ int fila_vazia(Fila f);
 int insere(Fila *f, Paciente elem);
 int remove_ini(Fila *f, Paciente *elem);
 int apaga_fila(Fila *f);
-int esvazia_fila(Fila F);
+int esvazia_fila(Fila *f);
 int tamanho_fila(Fila F);
 
 #endif //EXERCICIO4_FPA_H
