@@ -27,12 +27,11 @@ int main(){
         printf("--Fila--\n");
         printf("\n[1] Criar Fila\n");
         printf("[2] Inserir paciente na Fila\n");
-        printf("[3] Remover paciente da Fila\n");
-        printf("[4] Esvaziar a Fila\n");
-        printf("[5] Apagar Fila\n");
-        printf("[6] Tamanho\n");
-        printf("[7] Imprimir Fila \n");
-        printf("[8] Sair\n");
+        printf("[3] Remover primeiro da Fila\n");
+        printf("[4] Esvaziar/Apagar Fila\n");
+        printf("[5] Tamanho\n");
+        printf("[6] Imprimir Fila \n");
+        printf("[7] Sair\n");
         printf("--------------------------------------------\n");
         printf("Digite o valor desejado: ");
 
@@ -40,7 +39,8 @@ int main(){
         switch(escolha){
             case '1':
                 f = cria_fila();
-                    printf("A fila foi criada\n\n");
+                printf("A fila foi criada\n\n");
+                printf("\n\n");
                 break;
 
             case '2':
@@ -73,50 +73,50 @@ int main(){
 
 
                 if(insere(&f, pr) == 1)
-                    printf("O paciente foi inserido com sucesso!.\n\n");
+                    printf("O paciente foi inserido com sucesso!.");
                 else
-                    printf("O paciente não foi adicionado.\n\n");
+                    printf("O paciente não foi adicionado.");
+                printf("\n\n");
                 break;
 
             case '3':
                 if(remove_ini(&f, &pr) == 0)
-                    printf("O paciente não foi encontrado...\n");
+                    printf("O paciente não foi encontrado...");
                 else
-                    printf("O paciente foi removido com sucesso!.\n");
+                    printf("O paciente foi removido com sucesso!.");
+                printf("\n\n");
                 break;
             case '4':
-//                if(esvazia_fila(&f) == 0)
-//                    printf("A fila não pode ser esvaziada.\n");
-//                else
-//                    printf("A fila foi esvaziada com sucesso!.\n");
-
+                apaga_fila(&f);
+                printf("A fila foi apagada com sucesso!\n");
+                printf("\n\n");
                 break;
 
             case '5':
-                apaga_fila(&f);
-                printf("A fila foi apagada com sucesso!\n");
+                if (tamanho_fila(f) >= 0)
+                    printf("A fila tem tamanho igual a %d", tamanho_fila(f));
+                else
+                    printf("A fila é invalida...");
+
+                printf("\n\n");
                 break;
 
             case '6':
-                if (tamanho_fila(f) >= 0)
-                    printf("A fila tem tamanho igual a %d\n", tamanho_fila(f));
-                else
-                    printf("A fila é invalida...\n");
-
-                break;
-
-            case '7':
                 if(f != NULL)
                    imprimir_fila(f);
+                printf("\n\n");
               break;
 
-            case '8':
+            case '7':
                 trem = 1;
+                apaga_fila(&f);
+                printf("\n\n");
                 break;
 
 
             default:
-                printf("Opcao invalida!\n");
+                printf("Opcao invalida!");
+                printf("\n\n");
             }
     }
 

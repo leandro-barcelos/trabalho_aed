@@ -59,25 +59,19 @@ int insere(Fila *f, Paciente elem) {
     if (fila_vazia(*f)) {
         N->prox = N;
         *f = N;
-    }
-    else if ((*f)->prox->info.gravidade > elem.gravidade) {
+    } else if ((*f)->prox->info.gravidade > elem.gravidade) {
         N->prox = (*f)->prox;
         (*f)->prox = N;
-    }
-    else {
+    } else {
         Fila aux = (*f)->prox;
-        while (aux->prox->info.gravidade < elem.gravidade && aux->prox != *f)
+        while (aux != *f && aux->prox->info.gravidade < elem.gravidade)
             aux = aux->prox;
 
         N->prox = aux->prox;
+        aux->prox = N;
 
-
-        if (aux->prox == *f) {
-            aux->prox = N;
+        if (aux == *f)
             *f = N;
-        } else
-            aux->prox = N;
-
     }
 
     return 1;
@@ -111,27 +105,25 @@ int remove_ini(Fila *f, Paciente *elem) {
 /*
  * Operação apaga_fila:
  * - Entrada: Endereço da fila
- * - Pré-condição: Fila não vazia
  * - Processo: Apaga a fila
  * - Saída: 1 (sucesso), 0 (falha)
  * - Pós-condição: Fila apagada
  */
 
 int apaga_fila(Fila *f) {
-    if (fila_vazia(*f))
-        return 0;
+    if (!fila_vazia(*f)) {
+        Fila aux, tmp;
+        aux = (*f)->prox;
 
-    Fila aux = (*f)->prox;
+        while (aux != *f) {
+            tmp = aux->prox;
+            free(aux);
+            aux = tmp;
+        }
 
-    while (aux->prox != aux) {
-        (*f)->prox = aux->prox;
-        *f = aux->prox;
-        free(aux);
-        aux = *f;
+        free(*f);
+        *f = NULL;
     }
-
-    free(aux);
-    *f = NULL;
 
     return 1;
 }
