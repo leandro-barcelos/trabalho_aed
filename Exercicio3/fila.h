@@ -1,13 +1,12 @@
 #ifndef EXERCICIO3_FILA_H
 #define EXERCICIO3_FILA_H
 
-#define MAX_STRING 30
 #include <time.h>
 
 typedef struct fila *Fila;
 
 typedef struct carro {
-    char placa[7];
+    char placa[8];
     char tipo_servico;
     time_t hora_entrada;
 } Carro;

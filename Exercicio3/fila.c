@@ -8,8 +8,6 @@
 #include <string.h>
 #include "fila.h"
 
-
-
 #define MAX 5
 
 struct fila {

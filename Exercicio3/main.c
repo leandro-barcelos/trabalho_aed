@@ -3,22 +3,25 @@
 #include <stdlib.h>
 #include "fila.h"
 
-Fila box[3];
 
-void entrada();
+void entrada(Fila *box1, Fila *box2, Fila *box3);
 
-void saida();
+void saida(Fila *box1, Fila *box2, Fila *box3);
 
 time_t simula_hora(time_t hora_entrada);
 
-void visualizar_cenario();
+void visualizar_cenario(Fila box1, Fila box2, Fila box3);
 
 int main() {
+    Fila box1 = cria_fila();
+    Fila box2 = cria_fila();
+    Fila box3 = cria_fila();
+
     char escolha = '4';
 
     while (1) {
         printf("--- Estacionamento ---\n");
-        printf("Opcoes:\n");
+        printf("Opções:\n");
         printf("1 - Entrar com veículo\n");
         printf("2 - Sair com veículo\n");
         printf("3 - Visualizar estacionamento\n");
@@ -28,15 +31,21 @@ int main() {
 
         switch (escolha) {
             case '1':
-                entrada();
+                entrada(&box1, &box2, &box3);
+                printf("\n");
                 break;
             case '2':
-                saida();
+                saida(&box1, &box2, &box3);
+                printf("\n");
                 break;
             case '3':
-//                visualizar_cenario();
+                visualizar_cenario(box1, box2, box3);
+                printf("\n");
                 break;
-            case '4':
+            default:
+                apaga_fila(&box1);
+                apaga_fila(&box2);
+                apaga_fila(&box3);
                 return 0;
 
         }
@@ -44,7 +53,7 @@ int main() {
 }
 
 
-void entrada() {
+void entrada(Fila *box1, Fila *box2, Fila *box3) {
     Carro elem;
     char placa[8];
     char servico;
@@ -62,27 +71,31 @@ void entrada() {
     time(&hora_atual);
     elem.hora_entrada = hora_atual;
 
-    int menor;
+    Fila f_menor;
+    char n_menor;
 
-    if (tamanho_fila(box[0]) <= tamanho_fila(box[1]) &&
-        tamanho_fila(box[0]) <= tamanho_fila(box[2])) {
-        menor = 0;
+    if (tamanho_fila(*box1) <= tamanho_fila(*box2) &&
+        tamanho_fila(*box1) <= tamanho_fila(*box3)) {
+        f_menor = *box1;
+        n_menor = '1';
     }
-    else if (tamanho_fila(box[1]) <= tamanho_fila(box[0]) &&
-             tamanho_fila(box[1]) <= tamanho_fila(box[2])) {
-        menor = 1;
+    else if (tamanho_fila(*box2) <= tamanho_fila(*box1) &&
+             tamanho_fila(*box2) <= tamanho_fila(*box3)) {
+        f_menor = *box2;
+        n_menor = '2';
     }
-    else if (tamanho_fila(box[2]) <= tamanho_fila(box[0]) &&
-             tamanho_fila(box[2]) <= tamanho_fila(box[1]))  {
-        menor = 2;;
+    else if (tamanho_fila(*box3) <= tamanho_fila(*box1) &&
+             tamanho_fila(*box3) <= tamanho_fila(*box2))  {
+        f_menor = *box3;
+        n_menor = '3';
     }
     else {
-        printf("Todos os boxes estao cheios :(");
+        printf("Todos os boxes estão cheios :(");
         return;
     }
 
-    insere_fim(&box[menor], elem);
-    printf("Entrou no box %d", menor + 1);
+    insere_fim(&f_menor, elem);
+    printf("Entrou no box %c", n_menor);
 }
 
 time_t simula_hora(time_t hora_entrada) {
@@ -95,8 +108,8 @@ time_t simula_hora(time_t hora_entrada) {
     return hora_entrada;
 }
 
-void saida() {
-    Fila f_tmp;
+void saida(Fila *box1, Fila *box2, Fila *box3) {
+    Fila f_tmp = cria_fila();
     Carro c_tmp;
     Carro saindo;
     int achou = 0;
@@ -106,9 +119,11 @@ void saida() {
     printf("Número da placa: ");
     scanf("%s", placa);
 
+    Fila *aux[] = {box1, box2, box3};
+
     for (int i = 0; i < 3; i++) {
-        while (!fila_vazia(box[i])) {
-            remove_ini(&box[i], &c_tmp);
+        while (!fila_vazia(*aux[i])) {
+            remove_ini(aux[i], &c_tmp);
             if (strcmp(c_tmp.placa, placa) != 0)
                 insere_fim(&f_tmp, c_tmp);
             else {
@@ -118,7 +133,7 @@ void saida() {
         }
         while (!fila_vazia(f_tmp)) {
             remove_ini(&f_tmp, &c_tmp);
-            insere_fim(&box[i], c_tmp);
+            insere_fim(aux[i], c_tmp);
         }
 
         if (achou)
@@ -131,7 +146,7 @@ void saida() {
     }
 
     if (saindo.tipo_servico == 'M') {
-        printf("'Ja ta pago carissimo' Macedo, Autran - 2021 :)");
+        printf("'Ja ta pago caríssimo' Macedo, Autran - 2021 :)");
     }
     else {
         time_t hora_saida = simula_hora(saindo.hora_entrada);
@@ -153,8 +168,54 @@ void saida() {
                 intervalo = 0;
         }
 
-        printf("Valor a ser pago: R$%.2f", valor);
+        printf("Valor a ser pago: R$%.2f\n", valor);
         printf("Volte sempre! :D\n\n");
 
     }
+}
+
+void visualizar_cenario(Fila box1, Fila box2, Fila box3) {
+    Fila f1 = cria_fila();
+    Fila f2 = cria_fila();
+    Fila f3 = cria_fila();
+    Carro c1, c2, c3;
+    char h_separator[] = "+---------+---------+---------+\n";
+
+    printf("%s", h_separator);
+    printf("|  Box1   |  Box2   |  Box3   |\n");
+    printf("%s", h_separator);
+
+
+    for (int i = 0; i < 5; i++) {
+        if (remove_ini(&box1, &c1))
+            insere_fim(&f1, c1);
+        else
+            strcpy(c1.placa, "       ");
+
+        if (remove_ini(&box2, &c2))
+            insere_fim(&f2, c2);
+        else
+            strcpy(c2.placa, "       ");
+
+        if (remove_ini(&box3, &c3))
+            insere_fim(&f3, c3);
+        else
+            strcpy(c3.placa, "       ");
+
+        printf("| %s | %s | %s |\n", c1.placa, c2.placa, c3.placa);
+    }
+
+    while (!fila_vazia(f1) || !fila_vazia(f2) || !fila_vazia(f3)) {
+        if (remove_ini(&f1, &c1))
+            insere_fim(&box1, c1);
+
+        if (remove_ini(&f2, &c2))
+            insere_fim(&box2, c2);
+
+        if (remove_ini(&f3, &c3))
+            insere_fim(&box3, c3);
+    }
+
+
+    printf("%s", h_separator);
 }
