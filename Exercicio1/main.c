@@ -3,6 +3,7 @@
 
 int main()
 {
+    Pilha p = cria_pilha();
     char op;
     int num;
     int base;
@@ -40,10 +41,9 @@ int main()
     if(num == 0){
        printf("0\n\n");
        continue;
-       }
-
-    Pilha p = cria_pilha();
-
+    }
+    
+    esvazia_pilha(p);
 
     while(num !=0){
       resto = num%base;
@@ -54,8 +54,10 @@ int main()
     printf("O numero convertido eh: ");
     while( tamanho_pilha(p)!= 0){
         pop(p, &x);
-        printf("%d", x);
-
+        if (x < 10)
+            printf("%d", x);
+        else
+            printf("%c", 'A'-10+x);
     }
 
     printf("\n\n");
