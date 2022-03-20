@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
-int validar(Pilha p, const char *expr);
-int converter(Pilha p, const char *in, char *out);
-int avaliar(Pilha p, const char *expr, float *resultado);
+int validar(Pilha *p, const char *expr);
+int converter(Pilha *p, const char *in, char *out);
+int avaliar(Pilha *p, const char *expr, float *resultado);
 int precedencia(char a, char b);
 
 int main () {
@@ -22,10 +22,9 @@ int main () {
         scanf("%s", expr);
         if (strcmp(expr, "FIM") == 0) {
             printf("\nFim do programa!\n");
-            apaga_pilha(&p);
             return 0;
         }
-        ret = validar(p, expr);
+        ret = validar(&p, expr);
         switch (ret) {
             case 0:
                 break;
@@ -45,13 +44,13 @@ int main () {
                 printf("Erro: caractere invalido encontrado\n\n");
                 continue;
         }
-        ret = converter(p, expr, postfix);
+        ret = converter(&p, expr, postfix);
         if (ret == 0) {
             printf("Erro ao converter expressao\n\n");
             continue;
         }
         printf("Expressao na forma pos-fixa: %s\n", postfix);
-        ret = avaliar(p, postfix, &resultado);
+        ret = avaliar(&p, postfix, &resultado);
         switch (ret) {
             case 0:
                 break;
@@ -69,6 +68,9 @@ int main () {
         printf("Resultado da expressao: %.2f\n\n", resultado);
     }
 
+    apaga_pilha(&p);
+
+    return 0;
 }
 
 /*
@@ -79,8 +81,8 @@ int main () {
          4: erro aberto demais
          5: caractere invalido
 */
-int validar(Pilha p, const char *expr) {
-    apaga_pilha(&p);
+int validar(Pilha *p, const char *expr) {
+    apaga_pilha(p);
     union tp_dado dado;
     int tipo;
 
@@ -94,26 +96,26 @@ int validar(Pilha p, const char *expr) {
             }
 
             case '(': case '[': case '{': {
-                if (pilha_vazia(p) == 0) {
-                    get_topo(&p, &tipo, &dado);
+                if (pilha_vazia(*p) == 0) {
+                    get_topo(p, &tipo, &dado);
                     if (expr[i] > dado.letra)
                         return 1;
                 }
                 dado.letra = expr[i];
-                push(&p, 1, dado);
+                push(p, 1, dado);
 
                 break;
             }
 
             case ')': case ']': case '}': {
-                if (pilha_vazia(p) == 1)
+                if (pilha_vazia(*p) == 1)
                     return 3;
-                pop(&p, &tipo, &dado);
+                pop(p, &tipo, &dado);
                 if ((expr[i] == ')' && dado.letra != '(')
                     || (expr[i] == ']' && dado.letra != '[')
                     || (expr[i] == '}' && dado.letra != '{'))
                     return 2;
-
+                
                 break;
             }
 
@@ -123,14 +125,14 @@ int validar(Pilha p, const char *expr) {
         }
     }
 
-    if (pilha_vazia(p) == 0)
+    if (pilha_vazia(*p) == 0)
         return 4;
     else
         return 0;
 }
 
-int converter(Pilha p, const char *in, char *out) {
-    apaga_pilha(&p);
+int converter(Pilha *p, const char *in, char *out) {
+    apaga_pilha(p);
     int cont = 0;
     int tipo;
     union tp_dado dado;
@@ -146,30 +148,30 @@ int converter(Pilha p, const char *in, char *out) {
 
             case '^': case '*': case '/':
             case '+': case '-': {
-                while (pilha_vazia(p) == 0) {
-                    get_topo(&p, &tipo, &dado);
+                while (pilha_vazia(*p) == 0) {
+                    get_topo(p, &tipo, &dado);
                     if (precedencia(dado.letra, in[i]) == 0)
                         break;
-                    pop(&p, &tipo, &dado);
+                    pop(p, &tipo, &dado);
                     out[cont] = dado.letra;
                     cont++;
                 }
                 dado.letra = in[i];
-                push(&p, 1, dado);
+                push(p, 1, dado);
 
                 break;
             }
 
             case '{': case '[': case '(': {
                 dado.letra = in[i];
-                push(&p, 1, dado);
+                push(p, 1, dado);
 
                 break;
             }
 
             case '}': case ']': case ')': {
-                while (pilha_vazia(p) == 0) {
-                    pop(&p, &tipo, &dado);
+                while (pilha_vazia(*p) == 0) {
+                    pop(p, &tipo, &dado);
                     if (dado.letra == '{' || dado.letra == '[' || dado.letra == '(')
                         break;
                     out[cont] = dado.letra;
@@ -184,8 +186,8 @@ int converter(Pilha p, const char *in, char *out) {
         }
     }
 
-    while (pilha_vazia(p) == 0) {
-        pop(&p, &tipo, &dado);
+    while (pilha_vazia(*p) == 0) {
+        pop(p, &tipo, &dado);
         out[cont] = dado.letra;
         cont++;
     }
@@ -205,29 +207,29 @@ int precedencia(char a, char b) {
 
     switch (a) {
         case '^':
-            prec_a++;
+        prec_a++;
         case '*': case '/':
-            prec_a++;
+        prec_a++;
         case '+': case '-':
-            prec_a++;
+        prec_a++;
         case '{': case '[': case '(':
-            prec_a++;
-            break;
+        prec_a++;
+        break;
         default:
-            return -1;
+        return -1;
     }
     switch (b) {
         case '^':
-            prec_b++;
+        prec_b++;
         case '*': case '/':
-            prec_b++;
+        prec_b++;
         case '+': case '-':
-            prec_b++;
+        prec_b++;
         case '{': case '[': case '(':
-            prec_b++;
-            break;
+        prec_b++;
+        break;
         default:
-            return -1;
+        return -1;
     }
 
     if (prec_a >= prec_b)
@@ -236,8 +238,8 @@ int precedencia(char a, char b) {
         return 0;
 }
 
-int avaliar(Pilha p, const char *expr, float *resultado) {
-    apaga_pilha(&p);
+int avaliar(Pilha *p, const char *expr, float *resultado) {
+    apaga_pilha(p);
     struct {
         int flag;
         float valor;
@@ -256,16 +258,16 @@ int avaliar(Pilha p, const char *expr, float *resultado) {
                 tabela[idx].flag = 1;
             }
             dado.num = tabela[idx].valor;
-            push(&p, 0, dado);
+            push(p, 0, dado);
         }
         else {
-            if (pilha_vazia(p) == 1)
+            if (pilha_vazia(*p) == 1)
                 return 1;
-            pop(&p, &tipo, &dado);
+            pop(p, &tipo, &dado);
             op2 = dado.num;
-            if (pilha_vazia(p) == 1)
+            if (pilha_vazia(*p) == 1)
                 return 2;
-            pop(&p, &tipo, &dado);
+            pop(p, &tipo, &dado);
             op1 = dado.num;
             switch (expr[i]) {
                 case '^':
@@ -286,14 +288,14 @@ int avaliar(Pilha p, const char *expr, float *resultado) {
                 default:
                     return 4;
             }
-            push(&p, 0, dado);
+            push(p, 0, dado);
         }
     }
 
-    if (pilha_vazia(p) == 1)
+    if (pilha_vazia(*p) == 1)
         return 1;
-    pop(&p, &tipo, &dado);
-    if (pilha_vazia(p) == 0)
+    pop(p, &tipo, &dado);
+    if (pilha_vazia(*p) == 0)
         return 3;
     *resultado = dado.num;
     return 0;
