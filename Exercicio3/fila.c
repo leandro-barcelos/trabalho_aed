@@ -77,12 +77,12 @@ int fila_cheia(Fila F) {
  * - Pós-Condição: Fila com o elemento inserido
  */
 
-int insere_fim(Fila *F, Carro elem) {
-    if (fila_cheia(*F))
+int insere_fim(Fila F, Carro elem) {
+    if (fila_cheia(F))
         return 0;
 
-    (*F)->vetor[((*F)->ini+(*F)->cont) % MAX] = elem;
-    (*F)->cont++;
+    F->vetor[(F->ini+F->cont) % MAX] = elem;
+    F->cont++;
     return 1;
 }
 
@@ -96,13 +96,13 @@ int insere_fim(Fila *F, Carro elem) {
  *                 passada com o valor do elemento removido
  */
 
-int remove_ini(Fila *F, Carro *elem) {
-    if (fila_vazia(*F))
+int remove_ini(Fila F, Carro *elem) {
+    if (fila_vazia(F))
         return 0;
 
-    *elem = (*F)->vetor[(*F)->ini];
-    (*F)->ini = ((*F)->ini + 1) % MAX;
-    (*F)->cont--;
+    *elem = F->vetor[F->ini];
+    F->ini = (F->ini + 1) % MAX;
+    F->cont--;
 
     return 1;
 }
@@ -135,12 +135,12 @@ int apaga_fila(Fila *F) {
  * - Pós-Condição: Fila em estado de vazia
  */
 
-int esvazia_fila(Fila *F){
-    if (*F == NULL)
+int esvazia_fila(Fila F){
+    if (F == NULL)
         return 0;
 
-    (*F)->ini = 0;
-    (*F)->cont = 0;
+    F->ini = 0;
+    F->cont = 0;
 
     return 1;
 }
